@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: linkman-database
     hostname: linkman.main.db
     image: mysql:8.0.31
     restart: always
@@ -15,6 +16,7 @@ services:
       - linkman.net
 
   phpmyadmin:
+    container_name: linkman-phpmyadmin
     image: phpmyadmin
     ports:
       - "8000:80"
@@ -29,6 +31,7 @@ services:
     networks:
       - linkman.net
   localstack:
+    container_name: local-sqs
     image: localstack/localstack:latest
     hostname: localstack
     ports:
@@ -40,6 +43,7 @@ services:
       - linkman.cloud
 
   aws-cli:
+    container_name: aws-cli-starter
     image: amazon/aws-cli
     depends_on:
       - localstack
@@ -51,7 +55,9 @@ services:
     command: >
       -c "
       sleep 5;
-      aws --endpoint-url=http://localstack:4566 sqs create-queue --queue-name mail --attributes FifoQueue=true;
+      aws --endpoint-url=http://localstack:4566 sqs create-queue\
+      --queue-name mail.fifo \
+      --attributes FifoQueue=true;
       aws --endpoint-url=http://localstack:4566 sqs create-queue --queue-name metrics;
       echo 'queues created';
       "
