@@ -51,7 +51,7 @@ services:
     command: >
       -c "
       sleep 5;
-      aws --endpoint-url=http://localstack:4566 sqs create-queue --queue-name mail;
+      aws --endpoint-url=http://localstack:4566 sqs create-queue --queue-name mail --attributes FifoQueue=true;
       aws --endpoint-url=http://localstack:4566 sqs create-queue --queue-name metrics;
       echo 'queues created';
       "
