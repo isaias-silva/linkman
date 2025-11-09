@@ -4,11 +4,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import org.zk.linkman.constants.QueueActions;
 import org.zk.linkman.constants.Rules;
 import org.zk.linkman.dto.CreateUserDto;
+import org.zk.linkman.dto.QueueMessage;
 import org.zk.linkman.dto.UpdateUserDto;
+import org.zk.linkman.dto.UserDto;
 import org.zk.linkman.entities.UserEntity;
 import org.zk.linkman.repositories.UserRepository;
+import org.zk.linkman.services.infra.QueueService;
 import org.zk.linkman.tools.HashUtils;
 import org.zk.linkman.tools.ValuesUtils;
 
@@ -16,11 +20,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.lang.System.getenv;
+
 @ApplicationScoped
 
 public class UserService {
     @Inject
     private UserRepository userRepository;
+    @Inject
+    private QueueService queueService;
 
     public UserEntity getUser(Long id) {
         Optional<UserEntity> user = userRepository.findByIdOptional(id);
@@ -42,6 +50,9 @@ public class UserService {
         user.setRules(Set.of(Rules.USER));
         user.setLinks(List.of());
 
+        queueService.send(getenv("MAIL_QUEUE"),
+                new QueueMessage<UserDto>(QueueActions.CREATE_ACCOUNT, user.dto()));
+
         user.persist();
 
         return user;
@@ -55,6 +66,11 @@ public class UserService {
         ValuesUtils.setIf(dto.password(), dto.password() != null, (password) -> {
             user.setPassword(HashUtils.hashPassword(dto.password()));
         });
+
+        if (dto.mail() != null || dto.password() != null) {
+            queueService.send(getenv("MAIL_QUEUE"),
+                    new QueueMessage<UserDto>(QueueActions.UPDATE_ACCOUNT, user.dto()));
+        }
 
         user.persist();
 

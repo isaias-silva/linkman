@@ -1,5 +1,4 @@
 services:
-
   db:
     hostname: linkman.main.db
     image: mysql:8.0.31
@@ -29,7 +28,38 @@ services:
             - db
     networks:
       - linkman.net
+  localstack:
+    image: localstack/localstack:latest
+    hostname: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+      - DEBUG=1
+    networks:
+      - linkman.cloud
+
+  aws-cli:
+    image: amazon/aws-cli
+    depends_on:
+      - localstack
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      sleep 5;
+      aws --endpoint-url=http://localstack:4566 sqs create-queue --queue-name mail;
+      aws --endpoint-url=http://localstack:4566 sqs create-queue --queue-name metrics;
+      echo 'queues created';
+      "
+    networks:
+      - linkman.cloud
 
 networks:
   linkman.net:
+    driver: bridge
+  linkman.cloud:
     driver: bridge
