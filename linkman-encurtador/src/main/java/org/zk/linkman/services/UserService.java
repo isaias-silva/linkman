@@ -4,10 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import org.zk.linkman.constants.Rules;
 import org.zk.linkman.dto.CreateUserDto;
 import org.zk.linkman.dto.UpdateUserDto;
 import org.zk.linkman.entities.UserEntity;
-import org.zk.linkman.enums.Rule;
 import org.zk.linkman.repositories.UserRepository;
 import org.zk.linkman.tools.HashUtils;
 import org.zk.linkman.tools.ValuesUtils;
@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @ApplicationScoped
+
 public class UserService {
     @Inject
     private UserRepository userRepository;
@@ -37,7 +38,7 @@ public class UserService {
         user.setName(dto.name());
         user.setPassword(HashUtils.hashPassword(dto.password()));
 
-        user.setRules(Set.of(Rule.USER.getValue()));
+        user.setRules(Set.of(Rules.USER));
 
         user.persist();
 
