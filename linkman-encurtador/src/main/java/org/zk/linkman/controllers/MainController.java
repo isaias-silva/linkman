@@ -21,9 +21,9 @@ public class MainController {
     private LinkRepository linkRepository;
 
     @GET()
-    @Path("{id}")
+    @Path("l/{id}")
     public Response getUrl(@PathParam("id") String id) throws URISyntaxException {
-        Optional<LinkEntity> link = linkRepository.findByLink(id);
+        Optional<LinkEntity> link = linkRepository.findByUrl(id);
         if (link.isPresent())
             return Response.temporaryRedirect(URI.create(link.get().getOriginalUrl())).build();
 

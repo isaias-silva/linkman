@@ -1,6 +1,7 @@
 services:
 
   db:
+    hostname: linkman.main.db
     image: mysql:8.0.31
     restart: always
     environment:
@@ -8,6 +9,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - ./main_db:/var/lib/mysql
+
     ports:
       - "3307:3306"
     networks:
@@ -19,6 +21,12 @@ services:
       - "8000:80"
     environment:
       - PMA_ARBITRARY=1
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_ARBITRARY=1
+
+    depends_on:
+            - db
     networks:
       - linkman.net
 

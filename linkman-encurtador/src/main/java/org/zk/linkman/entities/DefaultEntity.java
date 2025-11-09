@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class DefaultEntity extends PanacheEntityBase {
+public abstract class DefaultEntity<DTO extends Record> extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
@@ -43,4 +43,7 @@ public abstract class DefaultEntity extends PanacheEntityBase {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public abstract DTO dto();
+
 }

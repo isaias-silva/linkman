@@ -21,6 +21,7 @@ public class AuthService {
     private UserRepository userRepository;
 
     public String login(LoginDto dto) {
+
         Optional<UserEntity> userEntity = userRepository.findUserByEmail(dto.mail());
         if (userEntity.isEmpty()) {
             throw new NotFoundException("Invalid credentials.");
@@ -30,9 +31,13 @@ public class AuthService {
         if(!HashUtils.checkPassword(dto.password(),user.getPassword())){
             throw new UnauthorizedException("Invalid credentials.");
         }
+        return generateToken(user);
+
+    }
+
+    public String generateToken(UserEntity user) {
         return Jwt.issuer("http://auth-linkman").subject(user.getId().toString())
                 .groups(new HashSet<>(user.getRules())).expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
                 .sign();
-
     }
 }

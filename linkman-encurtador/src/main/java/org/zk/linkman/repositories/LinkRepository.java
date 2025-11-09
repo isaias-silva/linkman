@@ -13,7 +13,7 @@ public class LinkRepository implements PanacheRepository<LinkEntity> {
     public Optional<LinkEntity> findByOriginalUrl(String url) {
         return find("originalUrl=?1", url).firstResultOptional();
     }
-    public Optional<LinkEntity> findByLink(String link){
-        return find("link=?1", link).firstResultOptional();
+    public Optional<LinkEntity> findByUrl(String link){
+        return find("url=?1", link).firstResultOptional();
     }
 }

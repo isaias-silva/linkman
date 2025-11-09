@@ -6,10 +6,15 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.zk.linkman.constants.Rules;
 import org.zk.linkman.dto.CreateUrlDto;
+import org.zk.linkman.dto.LinkDto;
 import org.zk.linkman.entities.LinkEntity;
 import org.zk.linkman.services.LinkService;
+
+import java.util.Map;
 
 @ApplicationScoped
 @Path("/link")
@@ -19,21 +24,51 @@ public class LinkController {
     @Inject
     private LinkService linkService;
 
+    @Inject
+    private JsonWebToken jwt;
+
     @GET()
-    public LinkEntity getLink(@QueryParam("id") Long id) {
-        return linkService.get(id);
+    @RolesAllowed(Rules.ADMIN)
+    public LinkDto getLink(@QueryParam("id") Long id) {
+        return linkService.get(id).dto();
+    }
+
+    @GET()
+    @Path("my")
+    public LinkDto getMyLink(@QueryParam("id") Long id) {
+        return linkService.get(getCreatorId(), id).dto();
     }
 
     @POST()
     @Transactional()
-    public LinkEntity createLink(@Valid CreateUrlDto body) {
-        return linkService.create(body);
+    public Response createLink(@Valid CreateUrlDto body) {
+        LinkDto link = linkService.create(getCreatorId(), body).dto();
+        return Response.status(201).entity(Map.of("link", link, "message", "link created")).build();
     }
 
     @DELETE()
     @Transactional()
-    public void deleteLink(@QueryParam("id") Long id) {
+    @RolesAllowed(Rules.ADMIN)
+    public Response deleteLink(@QueryParam("id") Long id) {
+
         linkService.delete(id);
+        return Response.status(200).entity(Map.of("message", "link deleted")).build();
+
+    }
+
+    @DELETE()
+    @Transactional()
+    @Path("my")
+    public Response deleteMyLink(@QueryParam("id") Long id) {
+
+        linkService.delete(getCreatorId(), id);
+        return Response.status(200).entity(Map.of("message", "link deleted")).build();
+
+
+    }
+
+    private long getCreatorId() {
+        return Long.parseLong(jwt.getSubject());
     }
 
 }

@@ -1,18 +1,17 @@
 package org.zk.linkman.entities;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrePersist;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
+import org.zk.linkman.dto.LinkDto;
 
 @Entity
-public class LinkEntity extends DefaultEntity {
+public class LinkEntity extends DefaultEntity<LinkDto> {
 
     private String originalUrl;
-    private String link;
+    private String url;
     private String title;
+
+    @ManyToOne
+    private UserEntity user;
 
     public String getTitle() {
         return title;
@@ -30,13 +29,24 @@ public class LinkEntity extends DefaultEntity {
         this.originalUrl = originalUrl;
     }
 
-    public String getLink() {
-        return link;
+    public String getUrl() {
+        return url;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
+    public UserEntity getUser() {
+        return user;
+    }
 
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
+    @Override
+    public LinkDto dto() {
+        return new LinkDto(getId(), title, url, originalUrl);
+    }
 }

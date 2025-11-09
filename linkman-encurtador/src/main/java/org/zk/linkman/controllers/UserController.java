@@ -12,6 +12,7 @@ import org.zk.linkman.constants.Rules;
 import org.zk.linkman.dto.CreateUserDto;
 import org.zk.linkman.dto.LoginDto;
 import org.zk.linkman.dto.UpdateUserDto;
+import org.zk.linkman.dto.UserDto;
 import org.zk.linkman.entities.UserEntity;
 import org.zk.linkman.services.AuthService;
 import org.zk.linkman.services.UserService;
@@ -33,23 +34,27 @@ public class UserController {
 
     @POST
     @Transactional
-    public UserEntity register(@Valid CreateUserDto dto) {
+    public Response register(@Valid CreateUserDto dto) {
+        UserEntity user = userService.createUser(dto);
 
-        return userService.createUser(dto);
+        String token = authService.generateToken(user);
+
+        return Response.status(201).entity(Map.of("token",token,"message","account created","data",user.dto())).build();
     }
 
     @POST()
     @Path("auth")
     public Response login(@Valid LoginDto dto) {
-        String jwt = authService.login(dto);
-        return Response.status(200).entity(Map.of("token", jwt, "message", "login successful.")).build();
+        String token = authService.login(dto);
+        return Response.status(200).entity(Map.of("token", token, "message", "login successful.")).build();
     }
 
     @GET()
     @RolesAllowed(Rules.USER)
-    public UserEntity get() {
+    @Path("me")
+    public UserDto get() {
         Long id = Long.parseLong(jwt.getSubject());
-        return userService.getUser(id);
+        return userService.getUser(id).dto();
     }
 
     @PUT()

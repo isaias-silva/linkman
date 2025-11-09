@@ -12,6 +12,7 @@ import org.zk.linkman.repositories.UserRepository;
 import org.zk.linkman.tools.HashUtils;
 import org.zk.linkman.tools.ValuesUtils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ public class UserService {
         user.setPassword(HashUtils.hashPassword(dto.password()));
 
         user.setRules(Set.of(Rules.USER));
+        user.setLinks(List.of());
 
         user.persist();
 
