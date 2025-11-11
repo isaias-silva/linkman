@@ -2,3 +2,4 @@ docker/main_db/
 docker/.env
 keys/
 .idea/
+*.iml
