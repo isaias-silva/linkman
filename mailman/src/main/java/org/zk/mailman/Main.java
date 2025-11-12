@@ -7,8 +7,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class Main {
 
-	@Incoming("test")
-	void observer(){
+	@Incoming("mail")
+	void processMail(String messageBody) {
+		System.out.println("📩 Mensagem recebida na fila de email:");
+		System.out.println(messageBody);
+
 
 	}
 

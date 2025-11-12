@@ -34,7 +34,7 @@ public class UserController {
 
     @POST
     @Transactional
-    public Response register(@Valid CreateUserDto dto) {
+    public Response register(@Valid CreateUserDto dto) throws Exception {
         UserEntity user = userService.createUser(dto);
 
         String token = authService.generateToken(user);
@@ -60,7 +60,7 @@ public class UserController {
     @PUT()
     @Path("update")
     @RolesAllowed(Rules.USER)
-    public Response update(@Valid UpdateUserDto dto) {
+    public Response update(@Valid UpdateUserDto dto) throws Exception {
         Long id = Long.parseLong(jwt.getSubject());
         UserEntity updated = userService.updateUser(id, dto);
         return Response.status(200).entity(Map.of("message", "user updated", "data", updated)).build();

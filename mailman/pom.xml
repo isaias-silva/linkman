@@ -42,7 +42,11 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-mailer</artifactId>
         </dependency>
+        <dependency>
+          <groupId>io.smallrye.reactive</groupId>
+          <artifactId>smallrye-reactive-messaging-aws-sqs</artifactId>
 
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
@@ -56,6 +60,7 @@
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>

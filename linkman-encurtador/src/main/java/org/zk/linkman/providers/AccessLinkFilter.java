@@ -20,7 +20,7 @@ public class AccessLinkFilter implements ContainerRequestFilter {
     private QueueService queueService;
 
     @Override
-    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
+    public void filter(ContainerRequestContext containerRequestContext) {
         String path = containerRequestContext.getUriInfo().getPath();
         if (path.startsWith("/l/")) {
             String ip = containerRequestContext.getHeaderString("X-Forwarded-For");
@@ -28,9 +28,15 @@ public class AccessLinkFilter implements ContainerRequestFilter {
 
             QueueMessage<RequestInfo> queueMessage = new QueueMessage<>(QueueActions.ACCESS_METRICS, info);
 
-            queueService.send(getenv("METRICS_QUEUE"),queueMessage );
+		try {
+                    queueService.send(getenv("METRICS_QUEUE"), queueMessage);
 
-        }
+                } catch (Exception e) {
+
+                    throw new RuntimeException(e);
+                }
+
+	}
 
     }
 }
