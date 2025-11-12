@@ -72,7 +72,8 @@ public class UserService {
 
         if (dto.mail() != null && !dto.mail().equals(user.getMail())) {
             queueService.send(getenv("MAIL_QUEUE"),  String.format("user-%s", user.getId()), new QueueMessage<>(QueueActions.EMAIL_CHANGE, user.dto()));
-            ValuesUtils.setIf(dto.name(), dto.name() != null, user::setName);
+
+            user.setMail(dto.mail());
         }
 
         user.persist();
