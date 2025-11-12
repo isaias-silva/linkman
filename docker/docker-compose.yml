@@ -19,12 +19,11 @@ services:
     container_name: linkman-phpmyadmin
     image: phpmyadmin
     ports:
-      - "8000:80"
+      - "8001:80"
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=db
       - PMA_PORT=3306
-      - PMA_ARBITRARY=1
 
     depends_on:
             - db
