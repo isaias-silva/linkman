@@ -26,9 +26,18 @@ services:
       - PMA_PORT=3306
 
     depends_on:
-            - db
+      - db
     networks:
       - linkman.net
+
+  cache:
+    container_name: linkman-cache
+    image: redis
+    ports:
+      - '6379:6379'
+    networks:
+      - linkman.net
+
   localstack:
     container_name: local-sqs
     image: localstack/localstack:latest
@@ -41,11 +50,18 @@ services:
     networks:
       - linkman.cloud
 
+    healthcheck:
+      test: [ "CMD", "awslocal","sqs", "list-queues" ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
   aws-cli:
     container_name: aws-cli-starter
     image: amazon/aws-cli
     depends_on:
-      - localstack
+        localstack:
+          condition: service_healthy
     environment:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
@@ -62,6 +78,7 @@ services:
       "
     networks:
       - linkman.cloud
+
 
 networks:
   linkman.net:
