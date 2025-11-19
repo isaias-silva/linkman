@@ -1,19 +1,23 @@
 package org.zk.linkman.commons.services.aws;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import org.zk.linkman.commons.dto.QueueMessage;
-
-import org.zk.linkman.commons.services.QueueService;
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.*;
-
-
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import org.zk.linkman.commons.dto.QueueMessage;
+import org.zk.linkman.commons.services.QueueService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
+import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 @ApplicationScoped
 public class SqsService implements QueueService {
@@ -50,7 +54,7 @@ public class SqsService implements QueueService {
     }
 
     @Override
-    public void consume(String queue, Consumer<QueueMessage<?>> action) throws JsonProcessingException {
+    public void consume(String queue, Class<?> dataClass, Consumer<QueueMessage<?>> action) throws JsonProcessingException {
 
         ReceiveMessageRequest receiveRequest = ReceiveMessageRequest.builder()
                 .queueUrl(queue)
@@ -62,14 +66,24 @@ public class SqsService implements QueueService {
         ReceiveMessageResponse response = sqsClient.receiveMessage(receiveRequest);
 
         for (Message message : response.messages()) {
-            QueueMessage<?> queueMessage = objectMapper.readValue(message.body(), QueueMessage.class);
 
-            action.accept(queueMessage);
+            try {
+                JavaType type = objectMapper.getTypeFactory().constructParametricType(QueueMessage.class, dataClass);
 
-            sqsClient.deleteMessage(DeleteMessageRequest.builder()
-                    .queueUrl(queue)
-                    .receiptHandle(message.receiptHandle())
-                    .build());
+                QueueMessage<?> msg = objectMapper.readValue(message.body(), type);
+
+                action.accept(msg);
+            } catch (Exception e) {
+
+                throw new RuntimeException(e);
+
+            }finally {
+                sqsClient.deleteMessage(DeleteMessageRequest.builder()
+                        .queueUrl(queue)
+                        .receiptHandle(message.receiptHandle())
+                        .build());
+            }
+
         }
     }
 }

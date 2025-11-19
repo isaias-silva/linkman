@@ -12,11 +12,13 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+
+import org.zk.linkman.commons.dto.ValidateCodeDto;
+
 import org.zk.linkman.encurtador.constants.QueueActions;
 import org.zk.linkman.encurtador.constants.Rules;
 import org.zk.linkman.encurtador.dto.CreateUserDto;
 import org.zk.linkman.encurtador.dto.UpdateUserDto;
-import org.zk.linkman.encurtador.dto.ValidateCodeDto;
 import org.zk.linkman.encurtador.entities.UserEntity;
 import org.zk.linkman.encurtador.repositories.UserRepository;
 import org.zk.linkman.encurtador.tools.HashUtils;

@@ -26,10 +26,7 @@ public class AccessLinkFilter implements ContainerRequestFilter {
             String ip = containerRequestContext.getHeaderString("X-Forwarded-For");
             RequestInfo info = new RequestInfo(path, ip, new Date().toString());
 
-            QueueMessage<RequestInfo> queueMessage = new QueueMessage<>(QueueActions.ACCESS_METRICS, info);
-
 		try {
-                    queueService.send(getenv("METRICS_QUEUE"), queueMessage);
 
                 } catch (Exception e) {
 
