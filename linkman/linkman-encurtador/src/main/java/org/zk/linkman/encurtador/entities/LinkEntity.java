@@ -10,7 +10,7 @@ public class LinkEntity extends DefaultEntity<LinkDto> {
     private String url;
     private String title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
 
     public String getTitle() {

@@ -2,6 +2,7 @@ package org.zk.linkman.encurtador.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import org.zk.linkman.encurtador.dto.UserDto;
 
@@ -15,7 +16,7 @@ public class UserEntity extends DefaultEntity<UserDto> {
     private String password;
     private Set<String> rules;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<LinkEntity> links;
 
     public String getName() {
@@ -60,6 +61,6 @@ public class UserEntity extends DefaultEntity<UserDto> {
 
     @Override
     public UserDto dto() {
-        return new UserDto(getId(),name, mail, links.stream().map(LinkEntity::dto).toList());
+        return new UserDto(getId(), name, mail);
     }
 }

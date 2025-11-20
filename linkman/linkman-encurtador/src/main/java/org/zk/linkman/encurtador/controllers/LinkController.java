@@ -8,11 +8,13 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.zk.linkman.encurtador.constants.Rules;
+import org.zk.linkman.commons.constants.Rules;
 import org.zk.linkman.encurtador.dto.CreateUrlDto;
 import org.zk.linkman.encurtador.dto.LinkDto;
+import org.zk.linkman.encurtador.entities.LinkEntity;
 import org.zk.linkman.encurtador.services.LinkService;
 
+import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
@@ -36,6 +38,13 @@ public class LinkController {
     @Path("my")
     public LinkDto getMyLink(@QueryParam("id") Long id) {
         return linkService.get(getCreatorId(), id).dto();
+    }
+
+    @GET()
+    @Path("/{page}/{count}")
+    public List<LinkDto> getMyLinks(@PathParam("page") int page, @PathParam("count") int count)
+    {
+        return linkService.getLinksByCreator(getCreatorId(),page, count).stream().map(LinkEntity::dto).toList();
     }
 
     @POST()

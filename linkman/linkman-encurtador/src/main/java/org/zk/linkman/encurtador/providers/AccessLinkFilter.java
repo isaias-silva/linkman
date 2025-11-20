@@ -4,9 +4,9 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.ext.Provider;
+import org.zk.linkman.commons.constants.QueueActions;
 import org.zk.linkman.commons.dto.QueueMessage;
 import org.zk.linkman.commons.services.QueueService;
-import org.zk.linkman.encurtador.constants.QueueActions;
 import org.zk.linkman.encurtador.dto.RequestInfo;
 
 
@@ -27,7 +27,7 @@ public class AccessLinkFilter implements ContainerRequestFilter {
             RequestInfo info = new RequestInfo(path, ip, new Date().toString());
 
 		try {
-
+            queueService.send(getenv("METRICS_QUEUE"), new QueueMessage<>(QueueActions.ACCESS_METRICS,info));
                 } catch (Exception e) {
 
                     throw new RuntimeException(e);

@@ -1,4 +1,4 @@
-package org.zk.linkman.encurtador.constants;
+package org.zk.linkman.commons.constants;
 
 public class Rules {
     public static final String USER = "user";

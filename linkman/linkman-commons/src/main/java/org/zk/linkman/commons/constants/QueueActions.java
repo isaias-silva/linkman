@@ -1,4 +1,4 @@
-package org.zk.linkman.encurtador.constants;
+package org.zk.linkman.commons.constants;
 
 public class QueueActions {
     public static final String UPDATE_ACCOUNT = "update_account";

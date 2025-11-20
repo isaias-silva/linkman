@@ -1,5 +1,6 @@
 package org.zk.linkman.encurtador.services;
 
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -9,10 +10,10 @@ import org.zk.linkman.encurtador.dto.CreateUrlDto;
 import org.zk.linkman.encurtador.entities.LinkEntity;
 import org.zk.linkman.encurtador.entities.UserEntity;
 import org.zk.linkman.encurtador.repositories.LinkRepository;
+import org.zk.linkman.encurtador.tools.ValuesUtils;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 
 @ApplicationScoped
 public class LinkService {
@@ -27,7 +28,7 @@ public class LinkService {
 
         UserEntity creator = userService.getUser(creatorId);
 
-        if (creator.getLinks().stream().anyMatch(l -> l.getOriginalUrl().equals(data.url()))) {
+        if (creator.getLinks().stream().anyMatch(l -> l.getTitle().equals(data.title()) || l.getOriginalUrl().equals(data.url()))) {
             throw new BadRequestException("Link already save.");
         }
 
@@ -44,10 +45,18 @@ public class LinkService {
         return linkEntity;
     }
 
+    public List<LinkEntity> getLinksByCreator(Long creator, int page, int count) {
+        return linkRepository.findByUser(creator, page, count);
+    }
+
     public LinkEntity get(Long id) {
         LinkEntity linkEntity = linkRepository.findById(id);
         if (linkEntity == null) throw new NotFoundException("Url not found.");
         return linkEntity;
+    }
+
+    public LinkEntity get(String url){
+        return linkRepository.findByUrl(url);
     }
 
     public LinkEntity get(Long creatorId, Long id) {
@@ -71,6 +80,7 @@ public class LinkService {
     }
 
     private String generateRandomValue() {
-        return UUID.randomUUID().toString();
+
+        return ValuesUtils.generateRandomWord(9);
     }
 }

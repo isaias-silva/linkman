@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.zk.linkman.encurtador.constants.Rules;
+import org.zk.linkman.commons.constants.Rules;
 import org.zk.linkman.encurtador.dto.CreateUserDto;
 import org.zk.linkman.encurtador.dto.LoginDto;
 import org.zk.linkman.encurtador.dto.UpdateUserDto;

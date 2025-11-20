@@ -13,10 +13,10 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
+import org.zk.linkman.commons.constants.QueueActions;
+import org.zk.linkman.commons.constants.Rules;
 import org.zk.linkman.commons.dto.ValidateCodeDto;
 
-import org.zk.linkman.encurtador.constants.QueueActions;
-import org.zk.linkman.encurtador.constants.Rules;
 import org.zk.linkman.encurtador.dto.CreateUserDto;
 import org.zk.linkman.encurtador.dto.UpdateUserDto;
 import org.zk.linkman.encurtador.entities.UserEntity;
@@ -113,7 +113,10 @@ public class UserService {
         }
 
         user.getRules().remove(Rules.UNVERIFIED);
+        user.getRules().add(Rules.USER);
+
         user.persist();
+
         cacheService.clearCode(id.intValue());
 
     }

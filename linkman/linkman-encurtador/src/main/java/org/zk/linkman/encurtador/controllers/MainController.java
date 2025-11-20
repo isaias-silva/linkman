@@ -7,8 +7,11 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
+import org.zk.linkman.encurtador.dto.LinkDto;
 import org.zk.linkman.encurtador.entities.LinkEntity;
 import org.zk.linkman.encurtador.repositories.LinkRepository;
+import org.zk.linkman.encurtador.services.CacheService;
+import org.zk.linkman.encurtador.services.LinkService;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,19 +24,13 @@ import static java.lang.System.getenv;
 
 public class MainController {
     @Inject
-    private LinkRepository linkRepository;
+    private CacheService cacheService;
 
     @GET()
-    @CacheResult(cacheName = "links")
-    @Path("l/{id}")
+    @Path("l/{url}")
 
-    public Response getUrl(@PathParam("id") String id) throws URISyntaxException {
-        Optional<LinkEntity> link = linkRepository.findByUrl(id);
-        if (link.isPresent()) {
-
-            return Response.temporaryRedirect(URI.create(link.get().getOriginalUrl())).build();
-
-        }
-        return Response.status(404).build();
+    public Response getUrl(@PathParam("url") String url) throws URISyntaxException {
+        LinkDto link = cacheService.getCacheLink(url);
+        return Response.temporaryRedirect(URI.create(link.originalUrl())).build();
     }
 }
