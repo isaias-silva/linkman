@@ -20,28 +20,33 @@
         margin: 10px;
         margin-bottom: 40px;
         }
-        a{
+        .code{
 
-        text-decoration: none;
+        text-align: center;
         color: #fff;
         background: #34bdeb;
-        width: 100px;
+        width: 300px;
         height: 50px;
         padding: 6px;
         border-radius: 20px;
         transition: 0.3s ease-out;
+        margin:auto;
+        margin-top: 10px;
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
         }
-        a:hover{
-        background: #1f82a3;
-        }
+
     </style>
     <title>default</title>
 </head>
 <body>
-<h1>[TITLE]</h1>
+<h1>{title}</h1>
 
-<p>[MESSAGE]</p>
+<span>{message}</span>
 
-<a href="[URL]">[URL-MESSAGE]</a>
+<p class="code">{code}</p>
+
 </body>
 </html>
