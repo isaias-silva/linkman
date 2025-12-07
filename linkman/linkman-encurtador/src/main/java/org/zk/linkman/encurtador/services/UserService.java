@@ -17,6 +17,7 @@ import org.zk.linkman.commons.constants.QueueActions;
 import org.zk.linkman.commons.constants.Rules;
 import org.zk.linkman.commons.dto.ValidateCodeDto;
 
+import org.zk.linkman.commons.services.FileStoreService;
 import org.zk.linkman.encurtador.dto.CreateUserDto;
 import org.zk.linkman.encurtador.dto.UpdateUserDto;
 import org.zk.linkman.encurtador.entities.UserEntity;
@@ -35,6 +36,8 @@ public class UserService {
     private QueueService queueService;
     @Inject
     private CacheService cacheService;
+    @Inject
+    private FileStoreService fileStoreService;
 
     public UserEntity getUser(Long id) {
         Optional<UserEntity> user = userRepository.findByIdOptional(id);
@@ -99,6 +102,15 @@ public class UserService {
         return user;
     }
 
+    public void uploadProfile(Long id, byte[] file) {
+        String fileName = String.format("%s.png", id);
+        fileStoreService.storeFile(getenv("PROFILE_FOLDER"), fileName, "image/png", file);
+    }
+
+    public String getProfile(Long id) {
+        String fileName = String.format("%s.png", id);
+        return fileStoreService.getFileURL(getenv("PROFILE_FOLDER"), fileName);
+    }
 
     public void validateUser(Long id, Integer code) {
         UserEntity user = getUser(id);
